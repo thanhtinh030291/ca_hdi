@@ -771,45 +771,41 @@ class ClaimController extends Controller
 
             
                 try {
-                    // $res = PostApiMantic("api/rest/claim/update/{$mantis_id}", $body,"PATCH");
-                    // $res = json_decode($res->getBody(),true);
+                    $res = PostApiMantic("api/rest/claim/update/{$mantis_id}", $body,"PATCH");
+                    $res = json_decode($res->getBody(),true);
                 } catch (Exception $e) {
 
-                    // $request->session()->flash(
-                    //     'errorStatus', 
-                    //     generateLogMsg($e)
-                    // );
-                    // return redirect('/admin/claim/'.$claim_id)->withInput();
-                }
-                // if($user->hasRole('Claim')){
-                //     $leader = $user->Leader;
-                //     if($leader != null){
-                //         $to_user = [$leader];
-                //     }
-                // }
-                // if($request->status_change != 26 && ($user->hasRole('Lead') || $user->hasRole('Claim Independent'))){
-                //     $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
-                //     $to_user = [Arr::random($to_user)];
-                // }
-
-                if($user->hasRole('Claim Independent')){
-                    $status_change[0] = 10; //QC approved
-                }
-                if(  $user->hasRole('Claim Independent') ){
-                    $to_user = [$user_create->manager];
+                    $request->session()->flash(
+                        'errorStatus', 
+                        generateLogMsg($e)
+                    );
+                    return redirect('/admin/claim/'.$claim_id)->withInput();
                 }
                 
-                if( $user->hasRole('Manager') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 20000000){
-                    $to_user = [$user_create->header];
+
+                if($claim_type != "P"){
+                    if($user->hasRole('Claim Independent')){
+                        $to_user = User::whereHas("roles", function($q){ $q->where("name", "QC"); })->get()->pluck('id')->toArray();
+                        $to_user = [Arr::random($to_user)];
+                    }
+
+                    if(  $user_create->hasRole('Claim Independent') && $user->hasRole('QC') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 10000000){
+                        $to_user = [$user_create->manager];
+                    }
+                    
+                    if( $user->hasRole('Manager') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000){
+                        $to_user = [$user_create->header];
+                    }
                 }
 
-                
-                // Claim GOP
-                if($user->hasRole('ClaimGOP') ){
-                    $to_user = Setting::findOrFail(1)->manager_gop_claim;
-                }
-                if( $user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 20000000){
-                    $to_user = Setting::findOrFail(1)->header_claim;
+
+                if ($claim_type == "P") {
+                    if ($user->hasRole('ClaimGOP') && removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 10000000) {
+                        $to_user = Setting::findOrFail(1)->manager_gop_claim;
+                    }
+                    if ($user->hasRole('ManagerGOP') &&  removeFormatPrice(data_get($export_letter->info, 'approve_amt')) > 50000000) {
+                        $to_user = Setting::findOrFail(1)->header_claim;
+                    }
                 }
 
                 if(!empty($to_user)){
