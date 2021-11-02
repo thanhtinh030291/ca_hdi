@@ -180,6 +180,7 @@ return[
         82 => 'partiallyaccepted',
         83 => 'declined',
         84 => 'answered',
+        85 => 'finished',
         90 => 'closed',
         91 => 'mcp_closed'
     ],
