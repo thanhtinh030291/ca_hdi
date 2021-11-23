@@ -181,24 +181,24 @@ class ClaimController extends Controller
     public function store(formClaimRequest $request)
     {
         $claim_type = $request->claim_type;
-        //validate
-        // $issue = MANTIS_BUG::where('id',(int)$request->barcode)->first();
-        // if($issue == null){
-        //     $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
-        //     return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
-        // }
-        //$id_project_mb = DB::connection('mysql_mantis')->table('mantis_project_table')->where('name','like','%Mobile%')->first()->id;
+       //validate
+        $issue = MANTIS_BUG::where('id',(int)$request->barcode)->first();
+        if($issue == null){
+            $request->session()->flash('errorStatus', 'Không Tồn tại Barcode này , vui lòng kiểm tra lại HBS');
+            return $claim_type == "P" ? redirect('/admin/P/claim/create')->withInput() : redirect('/admin/claim/create')->withInput() ;
+        }
+        $id_project_mb = DB::connection('mysql_mantis')->table('mantis_project_table')->where('name','like','%Mobile%')->first()->id;
         
-        
+    
         //end valid
         if ($request->_url_file_sorted) {
             saveFile($request->_url_file_sorted[0], config('constants.sortedClaimUpload'));
         }
         $file = $request->file;
         $dataNew = $request->except(['file','file2','table2_parameters', 'table1_parameters']);
-        // if($issue->project_id == $id_project_mb){
-        //     $dataNew['project'] = 'mobile';
-        // }
+        if($issue->project_id == $id_project_mb){
+             $dataNew['project'] = 'mobile';
+        }
         $user = Auth::User();
         $userId = $user->id;
         $dirUpload = Config::get('constants.formClaimUpload');
