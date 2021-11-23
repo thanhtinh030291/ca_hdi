@@ -386,6 +386,9 @@ class ClaimController extends Controller
          if($data->project == 'mobile') {
              $btn_notication = true;
              $renderMessageInvoice = renderMessageInvoice($data->id);
+             $listLetterTemplate = $listLetterTemplate->reject(function($value, $key) {
+                return $value == "Thư Thông Báo Đã Nhận Hồ Sơ";
+            });
          }
          //show btn payment 
         $can_pay_rq = false;
