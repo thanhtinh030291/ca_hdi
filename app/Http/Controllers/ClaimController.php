@@ -2614,7 +2614,7 @@ class ClaimController extends Controller
         $email_to = explode(",", $request->email_to);
         $email_to = array_diff( $email_to, ['admin@pacificcross.com.vn'] );
         
-        sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template,'bshclaims@pacificcross.com.vn');
+        sendEmailProvider($user, $email_to, 'provider', $subject, $data,$template,'hdiclaims@pacificcross.com.vn');
         return redirect('/admin/claim/'.$claim_id)->with('status', 'Đã gửi thư cho Custommer thành công');
     }
 

@@ -166,12 +166,12 @@ function sendEmailProvider($user_send, $to_email , $to_name, $subject, $data , $
             'data' => isset($data) ?  $data : []
         ], function ($mail) use ($user_send, $to_email, $to_name, $subject, $app_name, $app_email, $data , $reply) {
             $email_repply = $reply == null ? $user_send->email : $reply;
-            $email_name = $reply == null ? $user_send->name : "Claim BSH";
+            $email_name = $reply == null ? $user_send->name : "Claim HDI";
             $mail
                 ->to( $to_email )
                 ->cc([$user_send->email, $app_email])
                 ->replyTo( $email_repply , $email_name)
-                ->replyTo( 'cskh.bsh@pacificcross.com.vn' , 'CSKH')
+                ->replyTo( 'cskh.hdi@pacificcross.com.vn' , 'CSKH')
                 ->attachData(base64_decode($data['attachment']['base64']), $data['attachment']['filename'], ['mime' => $data['attachment']['filetype']])
                 ->subject($subject ."- #".config('constants.company')."#");
         }
