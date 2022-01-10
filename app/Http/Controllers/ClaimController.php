@@ -1586,7 +1586,7 @@ class ClaimController extends Controller
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">(VNĐ)</th>
                         </tr>
-                    <thead>';
+                    </thead>';
         $IP = [];
         $OP = [];
         $DT = [];
@@ -2728,8 +2728,8 @@ class ClaimController extends Controller
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Bệnh</th>
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Quyền lợi <br />(IP/OP/DT/PA..)</th>
                             <th style="border: 1px solid #1e91e3 ; font-family: arial, helvetica, sans-serif ; font-size: 11pt">Số tiền bồi thường <br />(VNĐ)</th>
-                        </tr>
-                    <thead>
+                        </tr> 
+                    </thead>
                     <tbody>';
         foreach ($claims as $key => $value) {
             $incur =$value->HBS_CL_LINE->map(function ($c) {
