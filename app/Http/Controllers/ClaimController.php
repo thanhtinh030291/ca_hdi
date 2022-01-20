@@ -396,7 +396,7 @@ class ClaimController extends Controller
         //$ready_to_pay_id = \App\MANTIS_CUSTOM_FIELD::where('name','Pay Claim')->first()->id;
         //$ready_to_pay = \App\MANTIS_CUSTOM_FIELD_STRING::where('bug_id',$claim->barcode)->where('field_id',$ready_to_pay_id)->where('value','Yes')->first();
         // if($count_ap > 0 && $ready_to_pay != null){
-        //     $can_pay_rq = true;
+           $can_pay_rq = true;
         // }
         $manager_gop_accept_pay = 'error';
         $hospital_request = $claim->hospital_request;
