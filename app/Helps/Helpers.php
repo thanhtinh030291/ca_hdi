@@ -364,7 +364,7 @@ function payMethod($HBS_CL_CLAIM){
             $info_reciever = 'Số tài khoản: '.$HBS_CL_CLAIM->member->cl_pay_acct_no;
             //$banking = $HBS_CL_CLAIM->member->bank_name.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
             $banking = $HBS_CL_CLAIM->member->BankNameChange.', '.$HBS_CL_CLAIM->member->cl_pay_bank_branch.', '. $HBS_CL_CLAIM->member->cl_pay_bank_city;
-            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.)";
+            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách. Trường hợp, sau 3 ngày gửi thư thông báo mà không nhận được phản hồi của Quý khách, chúng tôi hiểu rằng Quý khách đã đồng ý với kết quả bồi thường và chúng tôi sẽ tiến hành chi trả bồi thường trong vòng 3 ngày làm việc tiếp theo)";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CH':
@@ -373,7 +373,7 @@ function payMethod($HBS_CL_CLAIM){
             '.Carbon\Carbon::parse($HBS_CL_CLAIM->member->cash_id_passport_date_of_issue)->format('d/m/Y').', nơi cấp: '. $HBS_CL_CLAIM->member->cash_id_passport_issue_place;
             //$banking = $HBS_CL_CLAIM->member->cash_bank_name.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
             $banking = $HBS_CL_CLAIM->member->CashBankNameChange.', '.$HBS_CL_CLAIM->member->cash_bank_branch.', '.$HBS_CL_CLAIM->member->cash_bank_city ;
-            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường sau 05 ngày làm việc kể từ ngày ra thông báo này.)";
+            $notify = "(Pacific Cross Việt Nam sẽ tiến hành chi trả số tiền bồi thường trong vòng 3 ngày làm việc kể từ ngày nhận được xác nhận đồng ý của Quý khách. Trường hợp, sau 3 ngày gửi thư thông báo mà không nhận được phản hồi của Quý khách, chúng tôi hiểu rằng Quý khách đã đồng ý với kết quả bồi thường và chúng tôi sẽ tiến hành chi trả bồi thường trong vòng 3 ngày làm việc tiếp theo)";
             $not_show_table = false;
             break;
         case 'CL_PAYMENT_METHOD_CQ':
