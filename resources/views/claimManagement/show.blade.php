@@ -340,7 +340,6 @@ $totalAmount = 0;
                                         ]) !!}
                                         <br>
                                         {{$item->wait['created_at']}}
-                                        @if($item->created_user == $user->id)
                                             {{ Form::open(array('url' => '/admin/claim/sendSortedFile/'.$data->id, 'method'=>'post', 'files' => true))}}
                                                 {{ Form::hidden('export_letter_id', $item->id ) }}
                                                 {{ Form::hidden('letter_template_id', $item->letter_template->id ) }}
@@ -351,7 +350,6 @@ $totalAmount = 0;
                                                 {{ Form::hidden('letter_template_id', $item->letter_template->id ) }}
                                                 {!! Form::button('<i class="fa fa-repeat"></i> Download attach for CS', ['type' => 'submit', 'class' => 'btn btn-info btn-xs p-1']) !!}
                                             {!! Form::close() !!}
-                                        @endif
                                 @endif
                             </td>
                             <td>
