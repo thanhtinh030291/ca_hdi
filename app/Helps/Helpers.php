@@ -394,27 +394,27 @@ function payMethod($HBS_CL_CLAIM){
     $payMethod =    '<table style=" border: 1px solid ; border-collapse: collapse;border-color: #1e91e3">
                         <tbody>
                         <tr>
-                            <td style="border: 1px solid ; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 11pt;border-color: #1e91e3">
+                            <td style="border: 1px solid ; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 10pt;border-color: #1e91e3">
                                 <p>Tên người thụ hưởng: '.$name_reciever.'</p>
                             </td>
-                            <td style="border: 1px solid ; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 11pt;border-color: #1e91e3">
+                            <td style="border: 1px solid ; width: 350px; font-family: arial, helvetica, sans-serif ; font-size: 10pt;border-color: #1e91e3">
                                 <p>'.$info_reciever.'</p>
                             </td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid ; font-family: arial, helvetica, sans-serif ; font-size: 11pt; border-color: #1e91e3" colspan="2">
+                            <td style="border: 1px solid ; font-family: arial, helvetica, sans-serif ; font-size: 10pt; border-color: #1e91e3" colspan="2">
                                 <p>Tên và địa chỉ Ngân hàng: '.$banking.'</p>
                             </td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid ; font-family: arial, helvetica, sans-serif ; font-size: 11pt ; border-color: #1e91e3" colspan="2">
+                            <td style="border: 1px solid ; font-family: arial, helvetica, sans-serif ; font-size: 10pt ; border-color: #1e91e3" colspan="2">
                                 <p><strong>'.$notify.'</strong></p>
                             </td>
                         </tr>
                     </tbody>
                     </table>';
     if($not_show_table){
-        $payMethod = '<span style=" font-family: arial, helvetica, sans-serif ; font-size: 11pt;"><strong>'.$notify.'</strong></span>';
+        $payMethod = '<span style=" font-family: arial, helvetica, sans-serif ; font-size: 10pt;"><strong>'.$notify.'</strong></span>';
     }
     
     return $payMethod;
@@ -422,44 +422,29 @@ function payMethod($HBS_CL_CLAIM){
 
 // print letter IOPDiag
 
-function IOPDiag($HBS_CL_CLAIM, $claim_id){
+function IOPDiag($HBS_CL_CLAIM, $claim_id , $lang = null){
     $IOPDiag = [];
-        $ClaimWordSheet = App\ClaimWordSheet::where('claim_id',$claim_id)->first();
-        if(data_get($ClaimWordSheet,'type_of_visit') == null || data_get($ClaimWordSheet,'type_of_visit') == []){
-            foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $key => $value) {
-                switch ($value->PD_BEN_HEAD->scma_oid_ben_type) {
-                    case 'BENEFIT_TYPE_OP':
-                        $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                        $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: " . empty($value->RT_DIAGNOSIS->diag_desc_vn) ? $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
-                                    Ngày khám: $from_date tại ". $value->prov_name . ".";
-    
-                        break;
-                    case 'BENEFIT_TYPE_IP':
-                        $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
-                        $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
-                        $IOPDiag[] = "Chẩn đoán: ". $value->RT_DIAGNOSIS->diag_desc_vn ." <br>
-                                Ngày nhập viện: $from_date, ngày xuất viện:  $to_date tại ". $value->prov_name. ".";
-                        break;
-                    default:
-    
-                        break;
-                }
-            }
-        }else{
-            
-            foreach(data_get($ClaimWordSheet,'type_of_visit') as $key => $value){
-                if(data_get($value,'to') == null){
-                    $IOPDiag[] = "Chẩn đoán: " . data_get($value,'diagnosis') ." <br>
-                                Ngày khám: ".data_get($value,'from')." tại ". data_get($value,'prov_name') . ".";
-
-                }else{
-                    $IOPDiag[] = "Chẩn đoán: ".data_get($value,'diagnosis') ." <br>
-                            Ngày nhập viện: ".data_get($value,'from').", ngày xuất viện:  ".data_get($value,'to')." tại ". data_get($value,'prov_name'). ".";
-                }
-            }
+        foreach ($HBS_CL_CLAIM->HBS_CL_LINE as $key => $value) {
+            $from_date = Carbon\Carbon::parse($value->incur_date_from)->format('d/m/Y');
+            $to_date = Carbon\Carbon::parse($value->incur_date_to)->format('d/m/Y');
+            $IOPDiag[$key]['date'] = "$from_date - $to_date";
+            $IOPDiag[$key]['diagnosis'] = ($value->RT_DIAGNOSIS->diag_desc_vn == null || $lang == 'en' )  ?  $value->RT_DIAGNOSIS->diag_desc : $value->RT_DIAGNOSIS->diag_desc_vn ;
+            $IOPDiag[$key]['place'] = $value->prov_name;
         }
-    $IOPDiag = implode('<br>', array_unique($IOPDiag));
+    $IOPDiag = collect( $IOPDiag)->groupBy('place');
+    
+    foreach ($IOPDiag as $key => $value) {
+        if($lang == null || $lang == 'vn'){
+            $IOPDiag_f[] = '<span style="font-family: arial, helvetica, sans-serif; font-size: 10pt;" Ngày điều trị: '.$value->unique('date')->implode('date' , "; " )."<br>".
+            "Chẩn đoán: " . $value->unique('diagnosis')->implode('diagnosis' , ", " ) ." <br>".
+            'Nơi điều trị: '.$value[0]['place']." <br></span>";
+        }else{
+            $IOPDiag_f[] = '<span style="font-family: arial, helvetica, sans-serif; font-size: 10pt;" Treatment period:' .$value->unique('date')->implode('date' , "; " )."<br>".
+            "Diagnosis: " . $value->unique('diagnosis')->implode('diagnosis' , ", " ) ." <br>".
+            'Place of treatment: '.$value[0]['place']." <br></span>";
+        }
+    }
+    $IOPDiag = implode('<br>',  $IOPDiag_f);
     return $IOPDiag;
 }
 
@@ -569,17 +554,17 @@ function CSRRemark_TermRemark($claim){
         
         switch ($key) {
             case '12':
-                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo Điều 12_ Các loại trừ trách nhiệm bảo hiểm:</span></p>
-                <p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Những hoạt động chẩn đoán, xét nghiệm, điều trị, liên quan đến ốm đau bệnh tật, tai nạn, tử vong, thương tật phát sinh chi phí liên quan sẽ không được Fubon chi trả theo quy tắc này, bao gồm:</p>
+                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 10pt'>Quý khách vui lòng tham khảo Điều 12_ Các loại trừ trách nhiệm bảo hiểm:</span></p>
+                <p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 10pt'>Những hoạt động chẩn đoán, xét nghiệm, điều trị, liên quan đến ốm đau bệnh tật, tai nạn, tử vong, thương tật phát sinh chi phí liên quan sẽ không được Fubon chi trả theo quy tắc này, bao gồm:</p>
                 ";
                 break;
             case '16':
-                    $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo Điều 16_ Các giới hạn và loại trừ:</span></p>
-                    <p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Những hoạt động chẩn đoán, xét nghiệm, điều trị, liên quan đến ốm đau bệnh tật, tai nạn, tử vong, thương tật phát sinh chi phí liên quan sẽ không được chi trả theo hợp đồng này, bao gồm:</p>
+                    $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 10pt'>Quý khách vui lòng tham khảo Điều 16_ Các giới hạn và loại trừ:</span></p>
+                    <p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 10pt'>Những hoạt động chẩn đoán, xét nghiệm, điều trị, liên quan đến ốm đau bệnh tật, tai nạn, tử vong, thương tật phát sinh chi phí liên quan sẽ không được chi trả theo hợp đồng này, bao gồm:</p>
                     ";
                     break;
             default:
-                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 11pt'>Quý khách vui lòng tham khảo các định nghĩa của Quy tắc và Điều khoản bảo hiểm Chăm sóc sức khỏe:</span></p>";
+                $show_term[] = "<p style='text-align: justify;'><span style='font-family: arial, helvetica, sans-serif ; font-size: 10pt'>Quý khách vui lòng tham khảo các định nghĩa của Quy tắc và Điều khoản bảo hiểm Chăm sóc sức khỏe:</span></p>";
                 break;
         }
         $collect_value = collect($value)->sortBy('num');
