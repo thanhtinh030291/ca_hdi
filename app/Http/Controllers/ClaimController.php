@@ -402,9 +402,11 @@ class ClaimController extends Controller
         $hospital_request = $claim->hospital_request;
         $list_diagnosis = $claim->hospital_request ? collect($claim->hospital_request->diagnosis)->pluck('text', 'id') : [];
         $selected_diagnosis = $claim->hospital_request ? collect($claim->hospital_request->diagnosis)->pluck('id') : null;
-        
-        $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
-        
+        if($claim_type == "P"){
+            $fromEmail = $claim->inbox_email ? $claim->inbox_email->from . "," . implode(",", $claim->inbox_email->to) : "";
+        }else{
+            $fromEmail = $email.",havn@hdinsurance.com.vn,khangnn@hdinsurance.com.vn";
+        }
         
         $reject_code = collect($claim->RejectCode)->flatten(1)->values()->all();
         $compact = compact(['data', 'dataImage', 'items', 'admin_list', 'listReasonReject', 
